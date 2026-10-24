@@ -4,12 +4,20 @@ class Tree:
         self.leftnode = None
         self.rightnode = None
 
+count=0
+total=0
+
+
 def in_order_traversal(root):
+    global count,total
     if root.leftnode != None:
         in_order_traversal(root.leftnode)
     print(root.value)
+    count+=1
+    total+=root.value
     if root.rightnode != None:
         in_order_traversal(root.rightnode)
+
 
 def pre_order_traversal(root):
     print(root.value)
@@ -44,30 +52,26 @@ def search(root,search_value):
     else:
         return -1
 
-def predecessor(root,data):
-    while root:
-        if data > root.value:
-            result = root.rightnode
-            root = root.rightnode
-        elif data < root.value:
-            result = root.leftnode
-            root = root.leftnode
-        else:
-            if root.left:
-                result = root.leftnode
-                while result.rightnode:
-                    result = result.rightnode
-                p=result
-            break
+def in_order_succesor(root):
+    current=root.rightnode
+    while current != None and current.leftnode != None:
+        current = current.leftnode
+    return current
+
+def in_order_predecessor(root):
+    current=root.leftnode
+    while current != None and current.rightnode != None:
+        current = current.rightnode
+    return current
 
 
 def deletion(root,delete_value):
-    if root == None:
+    if root.value == None:
         return root
-    elif root > delete_value:
-        root.leftnode = deletion(root.rightnode,delete_value)
-    elif root < delete_value:
-        root.rightnode = deletion(root.leftnode,delete_value)
+    elif root.value > delete_value:
+        root.leftnode = deletion(root.leftnode,delete_value)
+    elif root.value < delete_value:
+        root.rightnode = deletion(root.rightnode,delete_value)
     else:
         if root.leftnode == None:
             temp = root.rightnode
@@ -78,7 +82,17 @@ def deletion(root,delete_value):
             root = None
             return temp
         else:
-            temp = None
+            print("deletion")
+            temp = in_order_succesor(root)
+            print(temp.value,"successor")
+            v=root.value
+            root.value=temp.value
+            temp.value=v
+            #root.rightnode = v
+            temp.value = None
+            print(root.leftnode.value,root.rightnode.value)
+            root.rightnode = deletion(root.rightnode,temp.value)
+
 
 
 root=Tree(12)
@@ -91,6 +105,7 @@ root.rightnode.rightnode = Tree(20)
 
 insertion(root,13)
 in_order_traversal(root)
+print(count,total)
 #pre_order_traversal(root)
 #post_order_traversal(root)
 print(root)
@@ -98,4 +113,6 @@ print(root)
 result = search(root,21)
 print(result)
 
-print(predecessor(root,10))
+deletion(root,7)
+print(in_order_traversal(root))
+#print(predecessor(root,10))
